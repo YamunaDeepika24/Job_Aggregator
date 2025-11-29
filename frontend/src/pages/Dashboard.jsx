@@ -1,61 +1,42 @@
+// frontend/src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
-import { listJobs } from "../api";
+import { authFetch } from "../api";
 
 export default function Dashboard({ token }) {
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const [err, setErr] = useState(null);
   useEffect(() => {
     if (!token) return;
-
-    setLoading(true);
-    listJobs()
-      .then((data) => {
-        setJobs(data.jobs || []);
-        setLoading(false);
+    authFetch("/api/jobs/recommended", token)
+      .then(res => {
+        setJobs(res.jobs || []);
       })
-      .catch((err) => {
-        console.error("Failed to load jobs:", err);
-        setLoading(false);
-      });
+      .catch(e => setErr(e.message || "Failed to fetch"));
   }, [token]);
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Recommended Jobs for You</h2>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : jobs.length === 0 ? (
-        <p>No jobs match your profile yet. Try updating your preferences.</p>
-      ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>Role</th>
-              <th>Company</th>
-              <th>Location</th>
-              <th>Published</th>
-              <th>Apply</th>
+    <div style={{padding:20}}>
+      <h2>Recommended Jobs</h2>
+      {err && <div style={{color:"red"}}>{err}</div>}
+      <table style={{width:"100%", borderCollapse:"collapse"}}>
+        <thead>
+          <tr style={{background:"#eee"}}><th>Role</th><th>Company</th><th>Location</th><th>Mode</th><th>Exp</th><th>Apply</th></tr>
+        </thead>
+        <tbody>
+          {jobs.length === 0 ? (
+            <tr><td colSpan={6}>No jobs found.</td></tr>
+          ) : jobs.map((j, i) => (
+            <tr key={i} style={{borderBottom:"1px solid #ddd"}}>
+              <td>{j.title}</td>
+              <td>{j.company || "—"}</td>
+              <td>{j.location || "—"}</td>
+              <td>{j.work_model || "—"}</td>
+              <td>{j.min_years_experience ?? "—"}</td>
+              <td><a href={j.url} target="_blank" rel="noreferrer">Apply</a></td>
             </tr>
-          </thead>
-          <tbody>
-            {jobs.map((j, i) => (
-              <tr key={i}>
-                <td>{j.title}</td>
-                <td>{j.company}</td>
-                <td>{j.location}</td>
-                <td>{j.published}</td>
-                <td>
-                  <a href={j.url} target="_blank" rel="noreferrer">
-                    Apply →
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

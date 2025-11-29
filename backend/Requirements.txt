@@ -7,3 +7,6 @@ passlib[bcrypt]
 python-jose[cryptography]
 pydantic
 python-multipart
+beautifulsoup4
+fuzzywuzzy 
+python-Levenshtein

@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
-import Register from "./pages/Register";
+// frontend/src/App.jsx
+import React, { useState } from "react";
+import Register from "./pages/Register"; // your existing pages
 import Login from "./pages/Login";
 import ProfileForm from "./pages/ProfileForm";
 import Dashboard from "./pages/Dashboard";
 
 export default function App() {
-  const storedToken = localStorage.getItem("access_token");
-  const [token, setToken] = useState(storedToken && storedToken !== "undefined" && storedToken !== "null" ? storedToken : null);
-  const [page, setPage] = useState(token ? "dashboard" : "login");
+  const stored = localStorage.getItem("access_token");
+  const [token, setToken] = useState(stored && stored !== "undefined" ? stored : null);
+  const [page, setPage] = useState("dashboard"); // default page after login
 
   function handleLogin(tokenStr) {
     localStorage.setItem("access_token", tokenStr);
     setToken(tokenStr);
-    setPage("dashboard");
+    setPage("profile");
   }
 
   function handleLogout() {

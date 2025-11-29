@@ -1,35 +1,42 @@
-const API_BASE = "http://localhost:8000/api";
+// src/api.js
+import axios from "axios";
 
-function getToken() {
-  return localStorage.getItem("access_token");
-}
+export const API_BASE = "http://localhost:8000";
 
-async function request(path, method = "GET", body = null) {
-  const headers = { "Content-Type": "application/json" };
-  const token = getToken();
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : null,
+// --------------------------------------------
+// Create axios instance with auth token support
+// --------------------------------------------
+export const authFetch = axios.create({
+  baseURL: API_BASE,
+});
+
+// Attach JWT token automatically
+authFetch.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// --------------------------------------------
+// AUTH FUNCTIONS
+// --------------------------------------------
+
+// Register new user
+export const register = async (email, password) => {
+  const response = await axios.post(`${API_BASE}/api/auth/register`, {
+    email,
+    password,
   });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) throw data || { detail: "Request failed" };
-  return data;
-}
+  return response.data;
+};
 
-export async function register(email, password) {
-  return request("/auth/register", "POST", { email, password });
-}
-export async function login(email, password) {
-  return request("/auth/login", "POST", { email, password });
-}
-export async function getMyProfile() {
-  return request("/profile/me");
-}
-export async function saveMyProfile(profile) {
-  return request("/profile/me", "POST", profile);
-}
-export async function listJobs() {
-  return request("/jobs/jobright");
-}
+// Login user & receive token
+export const login = async (email, password) => {
+  const response = await axios.post(`${API_BASE}/api/auth/login`, {
+    email,
+    password,
+  });
+  return response.data;
+};
