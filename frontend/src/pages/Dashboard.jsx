@@ -1,42 +1,37 @@
-// frontend/src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
-import { authFetch } from "../api";
+import { fetchJobs } from "../api";
+import { Link } from "react-router-dom";
 
-export default function Dashboard({ token }) {
+export default function Dashboard() {
   const [jobs, setJobs] = useState([]);
-  const [err, setErr] = useState(null);
+
   useEffect(() => {
-    if (!token) return;
-    authFetch("/api/jobs/recommended", token)
-      .then(res => {
-        setJobs(res.jobs || []);
-      })
-      .catch(e => setErr(e.message || "Failed to fetch"));
-  }, [token]);
+    fetchJobs().then(data => {
+      setJobs(data.jobs || []);
+    });
+  }, []);
 
   return (
-    <div style={{padding:20}}>
-      <h2>Recommended Jobs</h2>
-      {err && <div style={{color:"red"}}>{err}</div>}
-      <table style={{width:"100%", borderCollapse:"collapse"}}>
-        <thead>
-          <tr style={{background:"#eee"}}><th>Role</th><th>Company</th><th>Location</th><th>Mode</th><th>Exp</th><th>Apply</th></tr>
-        </thead>
-        <tbody>
-          {jobs.length === 0 ? (
-            <tr><td colSpan={6}>No jobs found.</td></tr>
-          ) : jobs.map((j, i) => (
-            <tr key={i} style={{borderBottom:"1px solid #ddd"}}>
-              <td>{j.title}</td>
-              <td>{j.company || "—"}</td>
-              <td>{j.location || "—"}</td>
-              <td>{j.work_model || "—"}</td>
-              <td>{j.min_years_experience ?? "—"}</td>
-              <td><a href={j.url} target="_blank" rel="noreferrer">Apply</a></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <nav>
+        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/profile">Profile</Link>
+      </nav>
+
+      <div className="container">
+        <h2>Recommended Jobs</h2>
+
+        {jobs.length === 0 ? <p>No jobs found.</p> : null}
+
+        {jobs.map((job, i) => (
+          <div key={i} style={{ borderBottom: "1px solid #ccc", padding: "10px 0" }}>
+            <h3>{job.title}</h3>
+            <p>{job.company}</p>
+            <p>{job.location}</p>
+            <a href={job.url} target="_blank" rel="noreferrer">Apply</a>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

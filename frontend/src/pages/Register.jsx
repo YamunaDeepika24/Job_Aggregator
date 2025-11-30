@@ -1,28 +1,35 @@
 import React, { useState } from "react";
-import { register } from "../api";
+import { registerUser } from "../api";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function Register({ onSwitch }) {
+export default function Register() {
+  const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const submit = async (e) => {
+  async function submit(e) {
     e.preventDefault();
-    try {
-      await register(email, password);
-      alert("Registered. Please login.");
-      onSwitch();
-    } catch {
-      alert("Register failed");
+    const res = await registerUser({ email, password });
+
+    if (res.id) {
+      alert("Registered!");
+      nav("/login");
+    } else {
+      alert("Registration failed");
     }
-  };
+  }
 
   return (
-    <form onSubmit={submit} style={{ maxWidth: 400 }}>
+    <div className="container">
       <h2>Register</h2>
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-      <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-      <button type="submit">Register</button>
-      <button type="button" onClick={onSwitch}>Back to login</button>
-    </form>
+      <form onSubmit={submit}>
+        <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+        <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+        <button type="submit">Register</button>
+      </form>
+      <p>
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
+    </div>
   );
 }
