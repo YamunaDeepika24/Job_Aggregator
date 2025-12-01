@@ -1,25 +1,54 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/login";
-import Register from "./pages/register";
-import Dashboard from "./pages/dashboard";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+import Login from "./src/pages/login";
+import Register from "./src/pages/register";
+import Dashboard from "./src/pages/dashboard";
 import Profile from "./pages/profile";
 
-function App() {
-  const token = localStorage.getItem("token");
+const App = () => {
+  const token = localStorage.getItem("access_token");
+
+  // ProtectedRoute component ensures user must be logged in
+  const ProtectedRoute = ({ children }) => {
+    if (!token) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
 
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/" element={token ? <Navigate to="/dashboard" /> : <Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/profile" element={token ? <Profile /> : <Navigate to="/login" />} />
+        {/* Protected routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Redirect any unknown route to dashboard if logged in, else login */}
+        <Route
+          path="*"
+          element={token ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+        />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
-}
+};
 
 export default App;
