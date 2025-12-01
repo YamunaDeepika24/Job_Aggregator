@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine
 from .get_jobs import router as jobs_router
 from .auth_utils import get_current_user
+from backend.routers.auth_router import router as auth_router
+from backend.routers.preferences_router import router as preferences_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,4 +23,5 @@ app.add_middleware(
 
 # ---- Include the jobs router ----
 app.include_router(jobs_router)
-# (KEEP all your other routers exactly as they are)
+app.include_router(auth_router)   
+app.include_router(preferences_router)

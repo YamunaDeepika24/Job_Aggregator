@@ -89,3 +89,11 @@ class UserPreferencesOut(UserPreferencesIn):
 
     class Config:
         orm_mode = True
+
+class PreferencesUpdate(BaseModel):
+    domains: List[str]
+    role: List[str]
+    experience: Optional[int]
+    visa: Optional[str]
+    locations: List[str]
+    work_mode: List[str]
