@@ -27,9 +27,6 @@
 # class TokenData(BaseModel):
 #     sub: Optional[str] = None
 
-# class LoginIn(BaseModel):
-#     email: EmailStr
-#     password: str
 
 # class PreferenceIn(BaseModel):
 #     domains: Optional[List[str]] = Field(default_factory=list)
@@ -75,12 +72,12 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 class UserPreferencesIn(BaseModel):
-    domains: Optional[List[str]]
-    roles: Optional[List[str]]
-    experience: Optional[int]
-    work_mode: Optional[str]
-    locations: Optional[List[str]]
-    visa_sponsorship: Optional[str]
+    domains: Optional[List[str]] = []
+    roles: Optional[List[str]] = []
+    experience: Optional[int] = None
+    work_mode: Optional[str] = []
+    locations: Optional[List[str]] = []
+    visa_sponsorship: Optional[str] = None
     email_opt_in: Optional[bool] = True
 
 class UserPreferencesOut(UserPreferencesIn):
@@ -90,6 +87,7 @@ class UserPreferencesOut(UserPreferencesIn):
     class Config:
         orm_mode = True
 
+
 class PreferencesUpdate(BaseModel):
     domains: List[str]
     role: List[str]
@@ -97,3 +95,17 @@ class PreferencesUpdate(BaseModel):
     visa: Optional[str]
     locations: List[str]
     work_mode: List[str]
+
+class JobOut(BaseModel):
+    id: int
+    title: str
+    company: str
+    location: str
+    domain: str
+    role: str
+    experience: int
+    work_mode: str
+    visa_sponsorship: str
+
+    class Config:
+        orm_mode = True

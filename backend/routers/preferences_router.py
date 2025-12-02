@@ -49,11 +49,13 @@ from sqlalchemy.orm import Session
 from backend import crud, models, schemas
 from backend.database import get_db
 from backend.auth_utils import get_current_user
+from typing import List
+
 
 router = APIRouter(prefix="/api/profile", tags=["Profile"])
 
 # GET current user preferences
-@router.get("/")
+@router.get("")
 def get_preferences(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     prefs = crud.get_preferences(db, current_user.id)
 
@@ -84,3 +86,5 @@ def update_preferences(data: schemas.UserPreferencesIn, db: Session = Depends(ge
     db.commit()
     db.refresh(prefs)
     return prefs
+
+
